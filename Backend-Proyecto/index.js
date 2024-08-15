@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
+
 // Configuración de la conexión a PostgreSQL
 const pool = new Pool({
   user: 'postgres',
@@ -16,6 +17,9 @@ const pool = new Pool({
 
 // Middleware para habilitar CORS
 app.use(cors());
+
+/*******************************************************************************/
+
 
 // Ruta de ejemplo
 app.get('/', (req, res) => {
@@ -167,3 +171,60 @@ app.post('/servicios', async (req, res) => {
   }
 });
 
+/*******************************************************************************/
+
+// Ruta para eliminar una cita
+app.delete('/citas/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query('DELETE FROM citas WHERE id = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Cita no encontrada');
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error en el servidor al eliminar una cita');
+  }
+});
+
+// Ruta para eliminar un cliente
+app.delete('/clientes/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query('DELETE FROM clientes WHERE id = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Cliente no encontrado');
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error en el servidor al eliminar un cliente');
+  }
+});
+
+// Ruta para eliminar un servicio
+app.delete('/servicios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query('DELETE FROM servicios WHERE id = $1 RETURNING *', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Servicio no encontrado');
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error en el servidor al eliminar un servicio');
+  }
+});
+
+/*******************************************************************************/
